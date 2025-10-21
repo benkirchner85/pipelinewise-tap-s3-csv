@@ -122,7 +122,10 @@ def sync_table_file(
     # chances of that are very small and at any rate the source data would
     # need to be fixed. The other consequence of this could be larger
     # memory consumption but that's acceptable as well.
-    csv.field_size_limit(sys.maxsize)
+    try:
+        csv.field_size_limit(sys.maxsize)
+    except OverflowError:
+        csv.field_size_limit(2 ** 31 - 1)
     iterator = get_row_iterator(
         s3_file_handle._raw_stream, table_spec
     )  # pylint:disable=protected-access
